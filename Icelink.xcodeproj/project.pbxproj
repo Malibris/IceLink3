@@ -49,6 +49,7 @@
 		EA8FC903208DB95A0088A368 /* libFMIceLinkVpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA8FC8E7208DB9590088A368 /* libFMIceLinkVpx.a */; };
 		EA8FC904208DB95A0088A368 /* FMWebSync.swift3.h in Headers */ = {isa = PBXBuildFile; fileRef = EA8FC8E8208DB9590088A368 /* FMWebSync.swift3.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EA8FC905208DB95A0088A368 /* FMIceLinkYuv.swift3.h in Headers */ = {isa = PBXBuildFile; fileRef = EA8FC8E9208DB9590088A368 /* FMIceLinkYuv.swift3.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EAD16202208DD201008D2C7D /* FM.h in Headers */ = {isa = PBXBuildFile; fileRef = EAD16201208DD201008D2C7D /* FM.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -96,6 +97,7 @@
 		EA8FC8E7208DB9590088A368 /* libFMIceLinkVpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libFMIceLinkVpx.a; path = lib/libFMIceLinkVpx.a; sourceTree = "<group>"; };
 		EA8FC8E8208DB9590088A368 /* FMWebSync.swift3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FMWebSync.swift3.h; path = lib/FMWebSync.swift3.h; sourceTree = "<group>"; };
 		EA8FC8E9208DB9590088A368 /* FMIceLinkYuv.swift3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FMIceLinkYuv.swift3.h; path = lib/FMIceLinkYuv.swift3.h; sourceTree = "<group>"; };
+		EAD16201208DD201008D2C7D /* FM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FM.h; path = lib/FM.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +158,7 @@
 		0243DAE61ED75EF000CEE189 /* Icelink */ = {
 			isa = PBXGroup;
 			children = (
+				EAD16201208DD201008D2C7D /* FM.h */,
 				EA8FC8CE208DB9560088A368 /* FMIceLink.h */,
 				EA8FC8DC208DB9570088A368 /* FMIceLink.swift3.h */,
 				EA8FC8D2208DB9560088A368 /* FMIceLinkCocoa.h */,
@@ -228,6 +231,7 @@
 				EA8FC8F3208DB9590088A368 /* FMIceLinkCocoa.swift3.h in Headers */,
 				EA8FC8FC208DB9590088A368 /* FMIceLinkVpx.h in Headers */,
 				EA8FC8F6208DB9590088A368 /* FMIceLinkOpus.h in Headers */,
+				EAD16202208DD201008D2C7D /* FM.h in Headers */,
 				EA8FC8F8208DB9590088A368 /* FMIceLink.swift3.h in Headers */,
 				EA8FC905208DB95A0088A368 /* FMIceLinkYuv.swift3.h in Headers */,
 				EA8FC8F4208DB9590088A368 /* FMIceLinkWebSync4.swift3.h in Headers */,
