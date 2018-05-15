@@ -17,3 +17,5 @@ FOUNDATION_EXPORT const unsigned char IcelinkVersionString[];
 #import <Icelink/FMIceLinkYuv.swift3.h>
 #import <Icelink/FMIceLinkVpx.swift3.h>
 #import <Icelink/FMIceLinkOpus.swift3.h>
+
+#import <Icelink/FMIceLinkXirSys.swift3.h>

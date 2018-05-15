@@ -21,6 +21,8 @@
 		02CF28531ED767B500BB1729 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02CF28521ED767B500BB1729 /* UIKit.framework */; };
 		02CF28551ED767BC00BB1729 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02CF28541ED767BC00BB1729 /* Foundation.framework */; };
 		02CF28571ED767D200BB1729 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 02CF28561ED767D200BB1729 /* libz.tbd */; };
+		EA45B83220AB093E006D08FC /* FMIceLinkXirSys.swift3.h in Headers */ = {isa = PBXBuildFile; fileRef = EA45B83120AB093E006D08FC /* FMIceLinkXirSys.swift3.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EA45B83420AB099F006D08FC /* libFMIceLinkXirSys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA45B83320AB099F006D08FC /* libFMIceLinkXirSys.a */; };
 		EA8FC8EA208DB9590088A368 /* FMIceLink.h in Headers */ = {isa = PBXBuildFile; fileRef = EA8FC8CE208DB9560088A368 /* FMIceLink.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EA8FC8EB208DB9590088A368 /* libFM-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA8FC8CF208DB9560088A368 /* libFM-iOS.a */; };
 		EA8FC8EC208DB9590088A368 /* libFMWebSyncSubscribers-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA8FC8D0208DB9560088A368 /* libFMWebSyncSubscribers-iOS.a */; };
@@ -69,6 +71,8 @@
 		02CF28521ED767B500BB1729 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		02CF28541ED767BC00BB1729 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		02CF28561ED767D200BB1729 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		EA45B83120AB093E006D08FC /* FMIceLinkXirSys.swift3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FMIceLinkXirSys.swift3.h; path = lib/FMIceLinkXirSys.swift3.h; sourceTree = "<group>"; };
+		EA45B83320AB099F006D08FC /* libFMIceLinkXirSys.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libFMIceLinkXirSys.a; path = lib/libFMIceLinkXirSys.a; sourceTree = "<group>"; };
 		EA8FC8CE208DB9560088A368 /* FMIceLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FMIceLink.h; path = lib/FMIceLink.h; sourceTree = "<group>"; };
 		EA8FC8CF208DB9560088A368 /* libFM-iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libFM-iOS.a"; path = "lib/libFM-iOS.a"; sourceTree = "<group>"; };
 		EA8FC8D0208DB9560088A368 /* libFMWebSyncSubscribers-iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libFMWebSyncSubscribers-iOS.a"; path = "lib/libFMWebSyncSubscribers-iOS.a"; sourceTree = "<group>"; };
@@ -119,6 +123,7 @@
 				EA8FC8FA208DB9590088A368 /* libFMIceLinkWebSync4.a in Frameworks */,
 				EA8FC8FD208DB9590088A368 /* libFMIceLink_armv7s.a in Frameworks */,
 				EA8FC8F1208DB9590088A368 /* libFMIceLinkYuv.a in Frameworks */,
+				EA45B83420AB099F006D08FC /* libFMIceLinkXirSys.a in Frameworks */,
 				EA8FC8FB208DB9590088A368 /* libFMWebSyncChat-iOS.a in Frameworks */,
 				02CF284F1ED7678600BB1729 /* CoreMedia.framework in Frameworks */,
 				EA8FC8FF208DB9590088A368 /* libFMWebSync-iOS.a in Frameworks */,
@@ -158,6 +163,21 @@
 		0243DAE61ED75EF000CEE189 /* Icelink */ = {
 			isa = PBXGroup;
 			children = (
+				EA8FC8CF208DB9560088A368 /* libFM-iOS.a */,
+				EA8FC8D9208DB9570088A368 /* libFMIceLink_arm64.a */,
+				EA8FC8E4208DB9580088A368 /* libFMIceLink_armv7.a */,
+				EA8FC8E1208DB9580088A368 /* libFMIceLink_armv7s.a */,
+				EA8FC8E6208DB9590088A368 /* libFMIceLink_i386.a */,
+				EA8FC8E2208DB9580088A368 /* libFMIceLink_x86_64.a */,
+				EA8FC8DB208DB9570088A368 /* libFMIceLinkCocoa.a */,
+				EA8FC8D4208DB9560088A368 /* libFMIceLinkOpus.a */,
+				EA8FC8E7208DB9590088A368 /* libFMIceLinkVpx.a */,
+				EA8FC8DE208DB9580088A368 /* libFMIceLinkWebSync4.a */,
+				EA45B83320AB099F006D08FC /* libFMIceLinkXirSys.a */,
+				EA8FC8D5208DB9570088A368 /* libFMIceLinkYuv.a */,
+				EA8FC8E3208DB9580088A368 /* libFMWebSync-iOS.a */,
+				EA8FC8DF208DB9580088A368 /* libFMWebSyncChat-iOS.a */,
+				EA8FC8D0208DB9560088A368 /* libFMWebSyncSubscribers-iOS.a */,
 				EAD16201208DD201008D2C7D /* FM.h */,
 				EA8FC8CE208DB9560088A368 /* FMIceLink.h */,
 				EA8FC8DC208DB9570088A368 /* FMIceLink.swift3.h */,
@@ -169,24 +189,11 @@
 				EA8FC8D3208DB9560088A368 /* FMIceLinkVpx.swift3.h */,
 				EA8FC8D1208DB9560088A368 /* FMIceLinkWebSync4.h */,
 				EA8FC8D8208DB9570088A368 /* FMIceLinkWebSync4.swift3.h */,
+				EA45B83120AB093E006D08FC /* FMIceLinkXirSys.swift3.h */,
 				EA8FC8E5208DB9580088A368 /* FMIceLinkYuv.h */,
 				EA8FC8E9208DB9590088A368 /* FMIceLinkYuv.swift3.h */,
 				EA8FC8E8208DB9590088A368 /* FMWebSync.swift3.h */,
 				EA8FC8DD208DB9570088A368 /* FMWebSyncSubscribers.swift3.h */,
-				EA8FC8CF208DB9560088A368 /* libFM-iOS.a */,
-				EA8FC8D9208DB9570088A368 /* libFMIceLink_arm64.a */,
-				EA8FC8E4208DB9580088A368 /* libFMIceLink_armv7.a */,
-				EA8FC8E1208DB9580088A368 /* libFMIceLink_armv7s.a */,
-				EA8FC8E6208DB9590088A368 /* libFMIceLink_i386.a */,
-				EA8FC8E2208DB9580088A368 /* libFMIceLink_x86_64.a */,
-				EA8FC8DB208DB9570088A368 /* libFMIceLinkCocoa.a */,
-				EA8FC8D4208DB9560088A368 /* libFMIceLinkOpus.a */,
-				EA8FC8E7208DB9590088A368 /* libFMIceLinkVpx.a */,
-				EA8FC8DE208DB9580088A368 /* libFMIceLinkWebSync4.a */,
-				EA8FC8D5208DB9570088A368 /* libFMIceLinkYuv.a */,
-				EA8FC8E3208DB9580088A368 /* libFMWebSync-iOS.a */,
-				EA8FC8DF208DB9580088A368 /* libFMWebSyncChat-iOS.a */,
-				EA8FC8D0208DB9560088A368 /* libFMWebSyncSubscribers-iOS.a */,
 				0243DAE71ED75EF000CEE189 /* Icelink.h */,
 				0243DAE81ED75EF000CEE189 /* Info.plist */,
 			);
@@ -235,6 +242,7 @@
 				EA8FC8F8208DB9590088A368 /* FMIceLink.swift3.h in Headers */,
 				EA8FC905208DB95A0088A368 /* FMIceLinkYuv.swift3.h in Headers */,
 				EA8FC8F4208DB9590088A368 /* FMIceLinkWebSync4.swift3.h in Headers */,
+				EA45B83220AB093E006D08FC /* FMIceLinkXirSys.swift3.h in Headers */,
 				EA8FC901208DB95A0088A368 /* FMIceLinkYuv.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
