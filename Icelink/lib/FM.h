@@ -1,6 +1,6 @@
 //
 // Title: FM Core for Cocoa
-// Version: 2.9.25
+// Version: 2.9.32
 // Copyright Frozen Mountain Software 2011+
 //
 
@@ -428,12 +428,12 @@ typedef enum {
 
 @interface NSThread (FMExtensions)
 
-+ (void)performBlockOnMainThread:(void (^)())block;
-+ (void)performBlockInBackground:(void (^)())block;
-+ (void)runBlock:(void (^)())block;
-- (void)performBlock:(void (^)())block;
-- (void)performBlock:(void (^)())block waitUntilDone:(BOOL)wait;
-- (void)performBlock:(void (^)())block afterDelay:(NSTimeInterval)delay;
++ (void)performBlockOnMainThread:(void (^)(void))block;
++ (void)performBlockInBackground:(void (^)(void))block;
++ (void)runBlock:(void (^)(void))block;
+- (void)performBlock:(void (^)(void))block;
+- (void)performBlock:(void (^)(void))block waitUntilDone:(BOOL)wait;
+- (void)performBlock:(void (^)(void))block afterDelay:(NSTimeInterval)delay;
 
 @end
 
@@ -556,10 +556,10 @@ typedef enum {
 
 + (FMCallback *)callback:(SEL)selector target:(id)target;
 + (FMCallback *)callback:(SEL)selector target:(id)target retainTarget:(bool)retainTarget;
-+ (FMCallback *)callbackWithEmptyAction:(void (^)())emptyAction;
++ (FMCallback *)callbackWithEmptyAction:(void (^)(void))emptyAction;
 + (FMCallback *)callbackWithSingleAction:(void (^)(id))singleAction;
 + (FMCallback *)callbackWithDoubleAction:(void (^)(id, id))doubleAction;
-+ (FMCallback *)callbackWithEmptyFunction:(id (^)())emptyFunction;
++ (FMCallback *)callbackWithEmptyFunction:(id (^)(void))emptyFunction;
 + (FMCallback *)callbackWithSingleFunction:(id (^)(id))singleFunction;
 + (FMCallback *)callbackWithDoubleFunction:(id (^)(id, id))doubleFunction;
 
@@ -567,18 +567,18 @@ typedef enum {
 
 - (void)add:(SEL)selector target:(id)target;
 - (void)add:(SEL)selector target:(id)target retainTarget:(bool)retainTarget;
-- (void)addEmptyAction:(void (^)())emptyAction;
+- (void)addEmptyAction:(void (^)(void))emptyAction;
 - (void)addSingleAction:(void (^)(id))singleAction;
 - (void)addDoubleAction:(void (^)(id, id))doubleAction;
-- (void)addEmptyFunction:(id (^)())emptyFunction;
+- (void)addEmptyFunction:(id (^)(void))emptyFunction;
 - (void)addSingleFunction:(id (^)(id))singleFunction;
 - (void)addDoubleFunction:(id (^)(id, id))doubleFunction;
 
 - (void)remove:(SEL)selector target:(id)target;
-- (void)removeEmptyAction:(void (^)())emptyAction;
+- (void)removeEmptyAction:(void (^)(void))emptyAction;
 - (void)removeSingleAction:(void (^)(id))singleAction;
 - (void)removeDoubleAction:(void (^)(id, id))doubleAction;
-- (void)removeEmptyFunction:(id (^)())emptyFunction;
+- (void)removeEmptyFunction:(id (^)(void))emptyFunction;
 - (void)removeSingleFunction:(id (^)(id))singleFunction;
 - (void)removeDoubleFunction:(id (^)(id, id))doubleFunction;
 
@@ -607,27 +607,27 @@ typedef enum {
 
 + (FMCallbackAction *)callbackActionWithSelector:(SEL)selector target:(id)target;
 + (FMCallbackAction *)callbackActionWithSelector:(SEL)selector target:(id)target retainTarget:(bool)retainTarget;
-+ (FMCallbackAction *)callbackActionWithEmptyAction:(void (^)())emptyAction;
++ (FMCallbackAction *)callbackActionWithEmptyAction:(void (^)(void))emptyAction;
 + (FMCallbackAction *)callbackActionWithSingleAction:(void (^)(id))singleAction;
 + (FMCallbackAction *)callbackActionWithDoubleAction:(void (^)(id, id))doubleAction;
-+ (FMCallbackAction *)callbackActionWithEmptyFunction:(id (^)())emptyFunction;
++ (FMCallbackAction *)callbackActionWithEmptyFunction:(id (^)(void))emptyFunction;
 + (FMCallbackAction *)callbackActionWithSingleFunction:(id (^)(id))singleFunction;
 + (FMCallbackAction *)callbackActionWithDoubleFunction:(id (^)(id, id))doubleFunction;
 - (id)initWithSelector:(SEL)selector target:(id)target;
 - (id)initWithSelector:(SEL)selector target:(id)target retainTarget:(bool)retainTarget;
-- (id)initWithEmptyAction:(void (^)())emptyAction;
+- (id)initWithEmptyAction:(void (^)(void))emptyAction;
 - (id)initWithSingleAction:(void (^)(id))singleAction;
 - (id)initWithDoubleAction:(void (^)(id, id))doubleAction;
-- (id)initWithEmptyFunction:(id (^)())emptyFunction;
+- (id)initWithEmptyFunction:(id (^)(void))emptyFunction;
 - (id)initWithSingleFunction:(id (^)(id))singleFunction;
 - (id)initWithDoubleFunction:(id (^)(id, id))doubleFunction;
 - (SEL)selector;
 - (id)target;
 - (bool)retainTarget;
-- (void (^)())emptyAction;
+- (void (^)(void))emptyAction;
 - (void (^)(id))singleAction;
 - (void (^)(id, id))doubleAction;
-- (id (^)())emptyFunction;
+- (id (^)(void))emptyFunction;
 - (id (^)(id))singleFunction;
 - (id (^)(id, id))doubleFunction;
 
@@ -8199,7 +8199,7 @@ typedef enum {
 /// <summary>
 /// Sets the callback that creates an HTTP-based transfer class.
 /// </summary>
-+ (void) setCreateHttpTransferBlock:(FMHttpTransfer* (^) ())valueBlock;
++ (void) setCreateHttpTransferBlock:(FMHttpTransfer* (^) (void))valueBlock;
 
 @end
 
@@ -8896,10 +8896,12 @@ typedef enum {
 
 @interface FMHttpWebRequest : NSObject 
 
+- (instancetype)initWithSession:(NSURLSession *)session;
 - (FMHttpResponseArgs*)sendBinaryWithRequestArgs:(FMHttpRequestArgs*)requestArgs;
 - (void)sendBinaryAsyncWithRequestArgs:(FMHttpRequestArgs*)requestArgs callback:(FMCallback*)callback;
 
 @end
+
 
 
 
@@ -9539,7 +9541,7 @@ typedef enum FMAsyncSocketError FMAsyncSocketError;
 
 
 
-@interface FMTcpSocket : NSObject
+@interface FMTcpSocket : NSObject
 
 - (id)initWithServer:(bool)server ipv6:(bool)ipv6 secure:(bool)secure;
 - (bool)isServer;

@@ -1,6 +1,6 @@
 //
 // Title: IceLink VPX Extension for Cocoa
-// Version: 3.2.1.472
+// Version: 3.2.2.616
 // Copyright Frozen Mountain Software 2011+
 //
 
@@ -28,7 +28,7 @@
  * A libvpx-based codec.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkVpxCodec) {
     /*!
      * <div>
      * Indicates the VP8 codec.
@@ -41,7 +41,7 @@ typedef enum {
      * </div>
      */
     FMIceLinkVpxCodecVp9 = 2
-} FMIceLinkVpxCodec;
+};
 
 /*!
  * <div>

@@ -1,6 +1,6 @@
 //
 // Title: IceLink for Cocoa
-// Version: 3.2.1.472
+// Version: 3.2.2.616
 // Copyright Frozen Mountain Software 2011+
 //
 
@@ -106,11 +106,13 @@
 @class FMIceLinkCertificate<__covariant TCertificate, __covariant TFingerprint>;
 @class FMIceLinkCharacterHolder;
 @class FMIceLinkCircularBuffer;
+@class FMIceLinkDiagnosticSampler;
 @class FMIceLinkDtlsCertificate;
 @class FMIceLinkFingerprint;
 @class FMIceLinkDtlsFingerprint;
 @class FMIceLinkEcdsaNamedCurveWrapper;
 @protocol FMIceLinkIFileStream;
+@class FMIceLinkManagedCountdownLatch;
 @class FMIceLinkOperatingSystemWrapper;
 @class FMIceLinkArchitectureWrapper;
 @protocol FMIceLinkIPlatform;
@@ -804,21 +806,23 @@
 
 
 
-typedef enum {
-    FMIceLinkStringComparisonCurrentCulture = 0,
-    FMIceLinkStringComparisonCurrentCultureIgnoreCase = 1,
-    FMIceLinkStringComparisonInvariantCulture = 2,
-    FMIceLinkStringComparisonInvariantCultureIgnoreCase = 3,
-    FMIceLinkStringComparisonOrdinal = 4,
-    FMIceLinkStringComparisonOrdinalIgnoreCase = 5
-} FMIceLinkStringComparison;
+typedef NS_ENUM(NSInteger, FMIceLinkStringComparison) {
+    FMIceLinkStringComparisonCurrentCulture,
+    FMIceLinkStringComparisonCurrentCultureIgnoreCase,
+    FMIceLinkStringComparisonInvariantCulture,
+    FMIceLinkStringComparisonInvariantCultureIgnoreCase,
+    FMIceLinkStringComparisonOrdinal,
+    FMIceLinkStringComparisonOrdinalIgnoreCase
+};
 
 
-typedef enum {
+
+typedef NS_ENUM(NSInteger, FMIceLinkUriKind) {
     FMIceLinkUriKindRelativeOrAbsolute = 0,
     FMIceLinkUriKindAbsolute = 1,
     FMIceLinkUriKindRelative = 2
-} FMIceLinkUriKind;
+};
+
 
 
 @interface FMIceLinkIFormatProvider : NSObject 
@@ -853,6 +857,7 @@ typedef enum {
 - (int) fmHour;
 - (int) fmMinute;
 - (int) fmSecond;
+- (int) fmMillisecond;
 
 @end
 
@@ -876,6 +881,7 @@ typedef enum {
 - (id)fmPopoff;
 - (NSMutableArray*) fmItem;
 - (NSMutableArray*) fmToArray;
+- (NSMutableArray*) fmGetRangeWithIndex: (int) index count: (int) count;
 - (bool) fmRemoveWithItem: (id) item;
 - (int) fmLength;
 - (void) fmCopyToWithArray: (NSMutableArray*) array arrayIndex: (int) arrayIndex;
@@ -963,6 +969,10 @@ typedef enum {
 + (NSString*) fmFormat: (NSString*) format arg0: (NSObject*) arg0 arg1: (NSObject*) arg1 arg2: (NSObject*) arg2 arg3: (NSObject*) arg3;
 + (NSString*) fmFormat: (NSString*) format arg0: (NSObject*) arg0 arg1: (NSObject*) arg1 arg2: (NSObject*) arg2 arg3: (NSObject*) arg3 arg4: (NSObject*) arg4;
 + (NSString*) fmFormat: (NSString*) format arg0: (NSObject*) arg0 arg1: (NSObject*) arg1 arg2: (NSObject*) arg2 arg3: (NSObject*) arg3 arg4: (NSObject*) arg4 arg5: (NSObject*) arg5;
++ (NSString*) fmFormat: (NSString*) format arg0: (NSObject*) arg0 arg1: (NSObject*) arg1 arg2: (NSObject*) arg2 arg3: (NSObject*) arg3 arg4: (NSObject*) arg4 arg5: (NSObject*) arg5 arg6: (NSObject*) arg6;
++ (NSString*) fmFormat: (NSString*) format arg0: (NSObject*) arg0 arg1: (NSObject*) arg1 arg2: (NSObject*) arg2 arg3: (NSObject*) arg3 arg4: (NSObject*) arg4 arg5: (NSObject*) arg5 arg6: (NSObject*) arg6 arg7: (NSObject*) arg7;
++ (NSString*) fmFormat: (NSString*) format arg0: (NSObject*) arg0 arg1: (NSObject*) arg1 arg2: (NSObject*) arg2 arg3: (NSObject*) arg3 arg4: (NSObject*) arg4 arg5: (NSObject*) arg5 arg6: (NSObject*) arg6 arg7: (NSObject*) arg7 arg8: (NSObject*) arg8;
++ (NSString*) fmFormat: (NSString*) format arg0: (NSObject*) arg0 arg1: (NSObject*) arg1 arg2: (NSObject*) arg2 arg3: (NSObject*) arg3 arg4: (NSObject*) arg4 arg5: (NSObject*) arg5 arg6: (NSObject*) arg6 arg7: (NSObject*) arg7 arg8: (NSObject*) arg8 arg9: (NSObject*) arg9;
 + (bool) fmIsNullOrEmpty: (NSString*) value;
 + (NSString*) fmEmpty;
 + (NSString*) fmJoinWithSeparator: (NSString*) separator value: (NSMutableArray*) value;
@@ -983,12 +993,12 @@ typedef enum {
 
 @interface NSThread (FMIceLinkExtensions)
 
-+ (void)fmPerformBlockOnMainThread:(void (^)())block;
-+ (void)fmPerformBlockInBackground:(void (^)())block;
-+ (void)fmRunBlock:(void (^)())block;
-- (void)fmPerformBlock:(void (^)())block;
-- (void)fmPerformBlock:(void (^)())block waitUntilDone:(BOOL)wait;
-- (void)fmPerformBlock:(void (^)())block afterDelay:(NSTimeInterval)delay;
++ (void)fmPerformBlockOnMainThread:(void (^)(void))block;
++ (void)fmPerformBlockInBackground:(void (^)(void))block;
++ (void)fmRunBlock:(void (^)(void))block;
+- (void)fmPerformBlock:(void (^)(void))block;
+- (void)fmPerformBlock:(void (^)(void))block waitUntilDone:(BOOL)wait;
+- (void)fmPerformBlock:(void (^)(void))block afterDelay:(NSTimeInterval)delay;
 
 @end
 
@@ -1021,8 +1031,8 @@ typedef enum {
 - (SEL)selector;
 - (id)target;
 
-/* static init */ + (instancetype)actionWithBlock:(void (^)())block;
-- (instancetype)initWithBlock:(void (^)())block;
+/* static init */ + (instancetype)actionWithBlock:(void (^)(void))block;
+- (instancetype)initWithBlock:(void (^)(void))block;
 /* static init */ + (instancetype)actionWithSelector:(SEL)selector target:(id)target;
 - (instancetype)initWithSelector:(SEL)selector target:(id)target;
 
@@ -1126,8 +1136,8 @@ typedef enum {
 - (SEL)selector;
 - (id)target;
 
-/* static init */ + (instancetype)functionWithBlock:(R (^)())block;
-- (instancetype)initWithBlock:(R (^)())block;
+/* static init */ + (instancetype)functionWithBlock:(R (^)(void))block;
+- (instancetype)initWithBlock:(R (^)(void))block;
 /* static init */ + (instancetype)functionWithSelector:(SEL)selector target:(id)target;
 - (instancetype)initWithSelector:(SEL)selector target:(id)target;
 
@@ -1332,7 +1342,7 @@ typedef enum {
 @end
 
 
-typedef enum {
+typedef NS_ENUM(NSInteger, DateTimeStyles) {
     FMIceLinkDateTimeStylesNone = 0,
     FMIceLinkDateTimeStylesAllowLeadingWhite = 1,
     FMIceLinkDateTimeStylesAllowTrailingWhite = 2,
@@ -1343,7 +1353,8 @@ typedef enum {
     FMIceLinkDateTimeStylesAssumeLocal = 32,
     FMIceLinkDateTimeStylesAssumeUniversal = 64,
     FMIceLinkDateTimeStylesRoundtripKind = 128
-} FMIceLinkDateTimeStyles;
+};
+
 
 
 @interface FMIceLinkEncoding : NSObject 
@@ -1917,7 +1928,7 @@ typedef enum {
  * Address types.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkAddressType) {
     /*!
      * <div>
      * Indicates an IP version 4 address.
@@ -1930,14 +1941,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkAddressTypeIPv6 = 2
-} FMIceLinkAddressType;
+};
 
 /*!
  * <div>
  * Asymmetric key types.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkAsymmetricKeyType) {
     /*!
      * <div>
      * Indicates an RSA key.
@@ -1950,14 +1961,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkAsymmetricKeyTypeEcdsa = 2
-} FMIceLinkAsymmetricKeyType;
+};
 
 /*!
  * <div>
  * A named elliptic curve.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkEcdsaNamedCurve) {
     /*!
      * <div>
      * The P256 named curve.
@@ -1976,14 +1987,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkEcdsaNamedCurveP521 = 3
-} FMIceLinkEcdsaNamedCurve;
+};
 
 /*!
  * <div>
  * An operating system.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkOperatingSystem) {
     /*!
      * <div>
      * Indicates an unknown or default OS.
@@ -2032,14 +2043,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkOperatingSystemWatchOS = 8
-} FMIceLinkOperatingSystem;
+};
 
 /*!
  * <div>
  * A CPU architecture.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkArchitecture) {
     /*!
      * <div>
      * Indicates an unknown or default CPU architecture.
@@ -2088,14 +2099,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkArchitectureMips64 = 8
-} FMIceLinkArchitecture;
+};
 
 /*!
  * <div>
  * A source language.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkSourceLanguage) {
     /*!
      * <div>
      * Indicates that the source language is C#.
@@ -2120,14 +2131,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkSourceLanguageTypeScript = 4
-} FMIceLinkSourceLanguage;
+};
 
 /*!
  * <div>
  * The compare result in a sort operation.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkCompareResult) {
     /*!
      * <div>
      * Indicates that the two elements are equal.
@@ -2146,14 +2157,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkCompareResultPositive = 3
-} FMIceLinkCompareResult;
+};
 
 /*!
  * <div>
  * A hash algorithm.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkHashType) {
     /*!
      * <div>
      * Indciates MD5.
@@ -2172,14 +2183,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkHashTypeSha256 = 3
-} FMIceLinkHashType;
+};
 
 /*!
  * <div>
  * A message authentication code (MAC) algorithm.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkMacType) {
     /*!
      * <div>
      * Indicates HMAC-MD5.
@@ -2198,14 +2209,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkMacTypeHmacSha256 = 3
-} FMIceLinkMacType;
+};
 
 /*!
  * <div>
  * Error codes are six digit values, where the first three digits indicate component, while the remaining three digits particular problem with the component.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkErrorCode) {
     /*!
      * <div>
      * Indicates that the socket encountered an error while sending.
@@ -2662,14 +2673,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkErrorCodeIceInvalidServerAssignmentError = 113001
-} FMIceLinkErrorCode;
+};
 
 /*!
  * <div>
  * A file stream access type.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkFileStreamAccess) {
     /*!
      * <div>
      * Indicates read access.
@@ -2682,14 +2693,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkFileStreamAccessWrite = 2
-} FMIceLinkFileStreamAccess;
+};
 
 /*!
  * <div>
  * The method used by an HTTP request.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkHttpMethod) {
     /*!
      * <div>
      * Indicates a GET request.
@@ -2726,14 +2737,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkHttpMethodDelete = 6
-} FMIceLinkHttpMethod;
+};
 
 /*!
  * <div>
  * The level at which to log.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkLogLevel) {
     /*!
      * <div>
      * Logs extensive messages detailing the program's state for troubleshooting.
@@ -2776,14 +2787,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkLogLevelNone = 7
-} FMIceLinkLogLevel;
+};
 
 /*!
  * <div>
  * The state of a future.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkFutureState) {
     /*!
      * <div>
      * Indicates that the promise has not been resolved or rejected.
@@ -2802,14 +2813,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkFutureStateRejected = 3
-} FMIceLinkFutureState;
+};
 
 /*!
  * <div>
  * An enumeration of potential WebSocket status codes.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkWebSocketStatusCode) {
     /*!
      * <div>
      * Indicates normal closure, meaning that the purpose for which
@@ -2900,14 +2911,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkWebSocketStatusCodeSecureHandshakeFailure = 1015
-} FMIceLinkWebSocketStatusCode;
+};
 
 /*!
  * <div>
  * The list of valid message types.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkStunMessageType) {
     /*!
      * <div>
      * Specifies that the message is a request.
@@ -2932,14 +2943,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkStunMessageTypeErrorResponse = 4
-} FMIceLinkStunMessageType;
+};
 
 /*!
  * <div>
  * The local bundle negotiation policy. Denotes the policy this peer uses when negotiating resulting connection bundling policy.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkBundlePolicy) {
     /*!
      * <div>
      * Indicates that the first media section of each type will contain transport parameters.
@@ -2961,14 +2972,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkBundlePolicyMaxBundle = 3
-} FMIceLinkBundlePolicy;
+};
 
 /*!
  * <div>
  * The state of a candidate pair.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkCandidatePairState) {
     /*!
      * <div>
      * Indicates that the candidate pair has been formed,
@@ -3016,14 +3027,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkCandidatePairStateConnectivityLost = 7
-} FMIceLinkCandidatePairState;
+};
 
 /*!
  * <div>
  * The type of a candidate.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkCandidateType) {
     /*!
      * <div>
      * Indicates a 'host' candidate, discovered by
@@ -3071,14 +3082,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkCandidateTypeUnknown = 5
-} FMIceLinkCandidateType;
+};
 
 /*!
  * <div>
  * A value used to indicate whether this codec is used to encode or decode.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkCodecType) {
     /*!
      * <div>
      * The attached RTCCodecStats represents a media format that is being encoded, or that the implementation is prepared to encode.
@@ -3091,14 +3102,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkCodecTypeDecode = 2
-} FMIceLinkCodecType;
+};
 
 /*!
  * <div>
  * The state of a connection.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkConnectionState) {
     /*!
      * <div>
      * Indicates that the connection is new and has not been started.
@@ -3147,14 +3158,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkConnectionStateClosed = 8
-} FMIceLinkConnectionState;
+};
 
 /*!
  * <div>
  * A data channel state.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkDataChannelState) {
     /*!
      * <div>
      * Indicates the FMIceLinkDataChannel has been created and has not started negotiating yet.
@@ -3191,14 +3202,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkDataChannelStateFailed = 6
-} FMIceLinkDataChannelState;
+};
 
 /*!
  * <div>
  * A cipher suite.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkDtlsCipherSuite) {
     /*!
      * <div>
      * Indicates TLS_RSA_WITH_AES_128_CBC_SHA.
@@ -3253,14 +3264,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkDtlsCipherSuiteEcdheEcdsaAes128CbcSha256 = 9
-} FMIceLinkDtlsCipherSuite;
+};
 
 /*!
  * <div>
  * DTLS protocol versions.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkDtlsProtocolVersion) {
     /*!
      * <div>
      * Indicates DTLS 1.0.
@@ -3273,14 +3284,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkDtlsProtocolVersionDtls12 = 2
-} FMIceLinkDtlsProtocolVersion;
+};
 
 /*!
  * <div>
  * A DTLS role.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkDtlsRole) {
     /*!
      * <div>
      * Indicates a negotiated role.
@@ -3299,14 +3310,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkDtlsRoleServer = 3
-} FMIceLinkDtlsRole;
+};
 
 /*!
  * <div>
  * The encryption mode for the stream.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkEncryptionMode) {
     /*!
      * <div>
      * No encryption and no integrity checking.
@@ -3337,14 +3348,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkEncryptionModeNullWeak = 5
-} FMIceLinkEncryptionMode;
+};
 
 /*!
  * <div>
  * Indicates encryption policy for a connection.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkEncryptionPolicy) {
     /*!
      * <div>
      * Encryption is required. If encryption is not supported by peer, connection must fail.
@@ -3363,14 +3374,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkEncryptionPolicyDisabled = 3
-} FMIceLinkEncryptionPolicy;
+};
 
 /*!
  * <div>
  * The state of an ICE gatherer.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkIceConnectionState) {
     /*!
      * <div>
      * Indicates that the ICE agent(s) is(are) gathering addresses or is(are) waiting to be given remote candidates (or both)..
@@ -3413,14 +3424,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkIceConnectionStateClosed = 7
-} FMIceLinkIceConnectionState;
+};
 
 /*!
  * <div>
  * The state of an ICE gatherer.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkIceGatheringState) {
     /*!
      * <div>
      * Indicates that the gatherer has been created and no gathering has occurred yet.
@@ -3457,14 +3468,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkIceGatheringStateFailed = 6
-} FMIceLinkIceGatheringState;
+};
 
 /*!
  * <div>
  * The local policy for gathering candidates.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkIceGatherPolicy) {
     /*!
      * <div>
      * All candidates (host, reflexive, and relay) will be gathered.
@@ -3483,14 +3494,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkIceGatherPolicyRelay = 3
-} FMIceLinkIceGatherPolicy;
+};
 
 /*!
  * <div>
  * Policy indicating whether ICE connectivity checks are required (and enabled) or disabled (and not required for a Connection)
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkIcePolicy) {
     /*!
      * <div>
      * Indicates that ICE connectivity checks are enabled and required on a Connection.
@@ -3509,14 +3520,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkIcePolicyNegotiated = 3
-} FMIceLinkIcePolicy;
+};
 
 /*!
  * <div>
  * An ICE role.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkIceRole) {
     /*!
      * <div>
      * Indicates a controlling role.
@@ -3529,14 +3540,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkIceRoleControlled = 2
-} FMIceLinkIceRole;
+};
 
 /*!
  * <div>
  * A layout alignment definition.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkLayoutAlignment) {
     /*!
      * <div>
      * Indicates a top-left alignment.
@@ -3591,14 +3602,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkLayoutAlignmentBottomRight = 9
-} FMIceLinkLayoutAlignment;
+};
 
 /*!
  * <div>
  * Specifies the direction of the layout flow.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkLayoutDirection) {
     /*!
      * <div>
      * Indicates that the layout should flow
@@ -3613,14 +3624,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkLayoutDirectionVertical = 2
-} FMIceLinkLayoutDirection;
+};
 
 /*!
  * <div>
  * Specifies the layout mode that should be used.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkLayoutMode) {
     /*!
      * <div>
      * Indicates that the local video feed should be displayed as
@@ -3649,14 +3660,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkLayoutModeInline = 4
-} FMIceLinkLayoutMode;
+};
 
 /*!
  * <div>
  * A layout origin definition.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkLayoutOrigin) {
     /*!
      * <div>
      * Indicates an origin where 0,0 is in the top-left corner.
@@ -3681,14 +3692,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkLayoutOriginBottomLeft = 4
-} FMIceLinkLayoutOrigin;
+};
 
 /*!
  * <div>
  * Specifies how an element should be scaled within a layout.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkLayoutScale) {
     /*!
      * <div>
      * Indicates that the element should be uniformly scaled
@@ -3716,14 +3727,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkLayoutScaleStretch = 3
-} FMIceLinkLayoutScale;
+};
 
 /*!
  * <div>
  * The state of local media.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkLocalMediaState) {
     /*!
      * <div>
      * Indicates that the local media has not been started yet.
@@ -3766,14 +3777,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkLocalMediaStateDestroyed = 7
-} FMIceLinkLocalMediaState;
+};
 
 /*!
  * <div>
  * The policy on how a media input should process the frame.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkProcessFramePolicy) {
     /*!
      * <div>
      * The media input will process the frame synchronously.
@@ -3786,14 +3797,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkProcessFramePolicyAsynchronous = 2
-} FMIceLinkProcessFramePolicy;
+};
 
 /*!
  * <div>
  * The state of a media pipe.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkMediaPipeState) {
     /*!
      * <div>
      * Indicates that the media sink has been initialized.
@@ -3812,14 +3823,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkMediaPipeStateDestroyed = 3
-} FMIceLinkMediaPipeState;
+};
 
 /*!
  * <div>
  * The state of a media sink.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkMediaSinkState) {
     /*!
      * <div>
      * Indicates that the media sink has been initialized.
@@ -3838,14 +3849,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkMediaSinkStateDestroyed = 3
-} FMIceLinkMediaSinkState;
+};
 
 /*!
  * <div>
  * The state of a media source.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkMediaSourceState) {
     /*!
      * <div>
      * Indicates that the media source has not been started yet.
@@ -3888,14 +3899,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkMediaSourceStateDestroyed = 7
-} FMIceLinkMediaSourceState;
+};
 
 /*!
  * <div>
  * The local policy for RTP/RTCP multiplex negotation.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkMultiplexPolicy) {
     /*!
      * <div>
      * Indicates that multiplexing will be used only if the remote end supports it.
@@ -3908,7 +3919,7 @@ typedef enum {
      * </div>
      */
     FMIceLinkMultiplexPolicyRequired = 2
-} FMIceLinkMultiplexPolicy;
+};
 
 /*!
  * <div>
@@ -3916,7 +3927,7 @@ typedef enum {
  * Cf. https://tools.ietf.org/html/draft-ietf-rtcweb-rtp-usage-26
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkNackPolicy) {
     /*!
      * <div>
      * The usage of generic NACKs is disabled.
@@ -3929,14 +3940,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkNackPolicyNegotiated = 2
-} FMIceLinkNackPolicy;
+};
 
 /*!
  * <div>
  * A protocol type.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkProtocolType) {
     /*!
      * <div>
      * Indicates the UDP protocol.
@@ -3961,7 +3972,7 @@ typedef enum {
      * </div>
      */
     FMIceLinkProtocolTypeUnknown = 4
-} FMIceLinkProtocolType;
+};
 
 /*!
  * <div>
@@ -3969,7 +3980,7 @@ typedef enum {
  * Cf. https://tools.ietf.org/html/draft-ietf-rtcweb-fec-04
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkRedFecPolicy) {
     /*!
      * <div>
      * The usage of RED FEC is disabled.
@@ -3982,7 +3993,7 @@ typedef enum {
      * </div>
      */
     FMIceLinkRedFecPolicyNegotiated = 2
-} FMIceLinkRedFecPolicy;
+};
 
 /*!
  * <div>
@@ -3990,7 +4001,7 @@ typedef enum {
  * Cf. https://tools.ietf.org/html/draft-alvestrand-rmcat-remb-03
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkRembPolicy) {
     /*!
      * <div>
      * The usage of goog-rembs is disabled.
@@ -4003,14 +4014,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkRembPolicyNegotiated = 2
-} FMIceLinkRembPolicy;
+};
 
 /*!
  * <div>
  * Indicates Sdes policy for stream.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkSdesPolicy) {
     /*!
      * <div>
      * Sdes is preferred but not required. If stream type is compatible (i.e. not a DataStream) Crypto attributes will be included in the session description.
@@ -4023,14 +4034,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkSdesPolicyDisabled = 3
-} FMIceLinkSdesPolicy;
+};
 
 /*!
  * <div>
  * SDP Attribute types
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkSdpAttributeType) {
     /*!
      * <div>
      * Unknown SDP Attribute
@@ -4247,14 +4258,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkSdpAttributeTypeSctpMaxMessageSizeAttribute = 35
-} FMIceLinkSdpAttributeType;
+};
 
 /*!
  * <div>
  * A list of known types for FMIceLinkSdpIceOptionTag.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkSdpIceOptionTagType) {
     /*!
      * <div>
      * Indicates an unknown option tag.
@@ -4267,28 +4278,28 @@ typedef enum {
      * </div>
      */
     FMIceLinkSdpIceOptionTagTypeTrickle = 2
-} FMIceLinkSdpIceOptionTagType;
+};
 
 /*!
  * <div>
  * Media Stream Id Semantic Tokens
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkSdpMediaStreamIdSemanticToken) {
     /*!
      * <div>
      * WebRTC Media Stream Semantic
      * </div>
      */
     FMIceLinkSdpMediaStreamIdSemanticTokenWms = 1
-} FMIceLinkSdpMediaStreamIdSemanticToken;
+};
 
 /*!
  * <div>
  * A session description type.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkSessionDescriptionType) {
     /*!
      * <div>
      * Indicates an offer.
@@ -4301,14 +4312,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkSessionDescriptionTypeAnswer = 2
-} FMIceLinkSessionDescriptionType;
+};
 
 /*!
  * <div>
  * The signalling state of a connection.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkSignallingState) {
     /*!
      * <div>
      * Indicates that no offer/answer exchange ever occurred.
@@ -4333,14 +4344,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkSignallingStateStable = 4
-} FMIceLinkSignallingState;
+};
 
 /*!
  * <div>
  * RTP packet header Extension support policies.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkBandwidthAdaptationPolicy) {
     /*!
      * <div>
      * Indicates a policy where stream bandwidth adaptation of encoder bitrates is disabled.
@@ -4353,14 +4364,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkBandwidthAdaptationPolicyEnabled = 2
-} FMIceLinkBandwidthAdaptationPolicy;
+};
 
 /*!
  * <div>
  * A stream direction.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkStreamDirection) {
     /*!
      * <div>
      * Indicates a stream that can send and can receive.
@@ -4391,14 +4402,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkStreamDirectionUnset = 5
-} FMIceLinkStreamDirection;
+};
 
 /*!
  * <div>
  * A stream state.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkStreamState) {
     /*!
      * <div>
      * Indicates the FMIceLinkStream has been created and has not started negotiating yet.
@@ -4435,14 +4446,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkStreamStateFailed = 5
-} FMIceLinkStreamState;
+};
 
 /*!
  * <div>
  * A stream type.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkStreamType) {
     /*!
      * <div>
      * Indicates an audio stream.
@@ -4473,7 +4484,7 @@ typedef enum {
      * </div>
      */
     FMIceLinkStreamTypeText = 5
-} FMIceLinkStreamType;
+};
 
 /*!
  * <div>
@@ -4481,7 +4492,7 @@ typedef enum {
  * Cf. https://tools.ietf.org/html/draft-ietf-ice-trickle-04
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkTrickleIcePolicy) {
     /*!
      * <div>
      * A Trickle ICE mode of operation where the offerer
@@ -4514,14 +4525,14 @@ typedef enum {
      * </div>
      */
     FMIceLinkTrickleIcePolicyHalfTrickle = 3
-} FMIceLinkTrickleIcePolicy;
+};
 
 /*!
  * <div>
  * An authenticated TURN operation.
  * </div>
  */
-typedef enum {
+typedef NS_ENUM(NSInteger, FMIceLinkTurnAuthOperation) {
     /*!
      * <div>
      * Indicates a socket allocation request.
@@ -4546,7 +4557,7 @@ typedef enum {
      * </div>
      */
     FMIceLinkTurnAuthOperationChannelBind = 4
-} FMIceLinkTurnAuthOperation;
+};
 
 /*!
  * <div>
@@ -6448,6 +6459,12 @@ typedef enum {
 - (FMIceLinkFuture*) setRemoteDescription:(FMIceLinkSessionDescription*)remoteDescription;
 /*!
  * <div>
+ * Sets the tie breaker.
+ * </div>
+ */
+- (void) setTieBreaker:(NSString*)value;
+/*!
+ * <div>
  * Sets the amount of time (in milliseconds)
  * to wait for a connection to establish before
  * giving up and closing it. Defaults to 30,000.
@@ -6540,6 +6557,12 @@ typedef enum {
 - (void) addOnStateChangeWithBlock:(void(^)(id))valueBlock;
 /*!
  * <div>
+ * Gets DataChannel ID
+ * </div>
+ */
+- (NSString*) id;
+/*!
+ * <div>
  * Gets the label.
  * </div>
  */
@@ -6574,6 +6597,12 @@ typedef enum {
  * </div>
  */
 - (void) sendDataString:(NSString*)dataString;
+/*!
+ * <div>
+ * Sets DataChannel ID
+ * </div>
+ */
+- (void) setId:(NSString*)value;
 /*!
  * <div>
  * Sets the callback to execute when a message is received.
@@ -8936,6 +8965,85 @@ typedef enum {
 
 /*!
  * <div>
+ * A record that calculates the min, max, and average from integer samples.
+ * </div>
+ */
+@interface FMIceLinkDiagnosticSampler : NSObject
+
+/*!
+ * <div>
+ * Adds a new sample to the calculation.
+ * </div>
+ * @param longSample The sample to add.
+ */
+- (void) addSampleWithLongSample:(long long)longSample;
+/*!
+ * <div>
+ * Gets the average of all samples.
+ * </div>
+ */
+- (double) average;
+/*!
+ * <div>
+ * Gets how many samples this record has used.
+ * </div>
+ */
+- (long long) count;
+/*!
+ * <div>
+ * Creates a new instance of the DiagnosticRecord.
+ * </div>
+ */
++ (FMIceLinkDiagnosticSampler*) diagnosticSampler;
+/*!
+ * <div>
+ * Creates a new instance of the DiagnosticRecord.
+ * </div>
+ * @param averageSampleCount How many samples to include in the average.
+ */
++ (FMIceLinkDiagnosticSampler*) diagnosticSamplerWithAverageSampleCount:(int)averageSampleCount;
+/*!
+ * <div>
+ * Creates a new instance of the DiagnosticRecord.
+ * </div>
+ */
+- (instancetype) init;
+/*!
+ * <div>
+ * Creates a new instance of the DiagnosticRecord.
+ * </div>
+ * @param averageSampleCount How many samples to include in the average.
+ */
+- (instancetype) initWithAverageSampleCount:(int)averageSampleCount;
+/*!
+ * <div>
+ * Gets the value of the last sample recorded.
+ * </div>
+ */
+- (long long) lastValue;
+/*!
+ * <div>
+ * Gets the maximum sample ever recorded.
+ * </div>
+ */
+- (long long) max;
+/*!
+ * <div>
+ * Gets the minimum sample ever recorded.
+ * </div>
+ */
+- (long long) min;
+/*!
+ * <div>
+ * Gets how many samples are included in the average.
+ * </div>
+ */
+- (int) samplesInAverage;
+
+@end
+
+/*!
+ * <div>
  * A certificate to be used for DTLS communication.
  * </div>
  */
@@ -9218,6 +9326,55 @@ typedef enum {
 
 @end
 
+/*!
+ * <div>
+ * A countdown latch that will signal when the counter reaches zero.
+ * </div>
+ */
+@interface FMIceLinkManagedCountdownLatch : NSObject
+
+/*!
+ * <div>
+ * Gets the current count on the latch.
+ * </div>
+ */
+- (int) count;
+/*!
+ * <div>
+ * Decrements the counter by one and signals if it reaches zero.
+ * </div>
+ */
+- (void) decrement;
+/*!
+ * <div>
+ * Creates a new instance of the Latch with an initial count.
+ * </div>
+ * @param initialCount The count to start the latch at.
+ */
+- (instancetype) initWithInitialCount:(int)initialCount;
+/*!
+ * <div>
+ * Creates a new instance of the Latch with an initial count.
+ * </div>
+ * @param initialCount The count to start the latch at.
+ */
++ (FMIceLinkManagedCountdownLatch*) managedCountdownLatchWithInitialCount:(int)initialCount;
+/*!
+ * <div>
+ * Returns a promise that resolves once the counter reaches zero.
+ * </div>
+ * @return
+ */
+- (FMIceLinkFuture<id>*) waitAsync;
+/*!
+ * <div>
+ * Blocks until the counter reaches zero.
+ * </div>
+ */
+- (void) waitSync;
+
+@end
+
 @interface FMIceLinkOperatingSystemWrapper : NSObject
 
 - (NSString*) description;
@@ -9286,7 +9443,7 @@ typedef enum {
  * </div>
  * @param createObjectBlock A function that creates an object.
  */
-- (instancetype) initWithCreateObjectBlock:(T(^)())createObjectBlock;
+- (instancetype) initWithCreateObjectBlock:(T(^)(void))createObjectBlock;
 /*!
  * <div>
  * Initializes a new instance of the FMIceLinkPool`1 class
@@ -9295,7 +9452,7 @@ typedef enum {
  * @param createObjectBlock A function that creates an object.
  * @param minSize The minimum size.
  */
-- (instancetype) initWithCreateObjectBlock:(T(^)())createObjectBlock minSize:(int)minSize;
+- (instancetype) initWithCreateObjectBlock:(T(^)(void))createObjectBlock minSize:(int)minSize;
 /*!
  * <div>
  * Initializes a new instance of the FMIceLinkPool`1 class.
@@ -9305,7 +9462,7 @@ typedef enum {
  * @param minSize The minimum size.
  * @param maxSize The maximum size.
  */
-- (instancetype) initWithCreateObjectBlock:(T(^)())createObjectBlock minSize:(int)minSize maxSize:(int)maxSize;
+- (instancetype) initWithCreateObjectBlock:(T(^)(void))createObjectBlock minSize:(int)minSize maxSize:(int)maxSize;
 /*!
  * <div>
  * Gets the maximum size. Value must be &gt;= 0.
@@ -9353,7 +9510,7 @@ typedef enum {
  * </div>
  * @param createObjectBlock A function that creates an object.
  */
-+ (FMIceLinkPool*) poolWithCreateObjectBlock:(T(^)())createObjectBlock;
++ (FMIceLinkPool*) poolWithCreateObjectBlock:(T(^)(void))createObjectBlock;
 /*!
  * <div>
  * Initializes a new instance of the FMIceLinkPool`1 class
@@ -9362,7 +9519,7 @@ typedef enum {
  * @param createObjectBlock A function that creates an object.
  * @param minSize The minimum size.
  */
-+ (FMIceLinkPool*) poolWithCreateObjectBlock:(T(^)())createObjectBlock minSize:(int)minSize;
++ (FMIceLinkPool*) poolWithCreateObjectBlock:(T(^)(void))createObjectBlock minSize:(int)minSize;
 /*!
  * <div>
  * Initializes a new instance of the FMIceLinkPool`1 class.
@@ -9372,7 +9529,7 @@ typedef enum {
  * @param minSize The minimum size.
  * @param maxSize The maximum size.
  */
-+ (FMIceLinkPool*) poolWithCreateObjectBlock:(T(^)())createObjectBlock minSize:(int)minSize maxSize:(int)maxSize;
++ (FMIceLinkPool*) poolWithCreateObjectBlock:(T(^)(void))createObjectBlock minSize:(int)minSize maxSize:(int)maxSize;
 /*!
  * <div>
  * Put an object back.
@@ -9589,7 +9746,7 @@ typedef enum {
  * The deserialized dictionary.
  * 
  */
-+ (NSMutableDictionary<NSString*,id>*) deserializeDictionaryWithDictionaryJson:(NSString*)dictionaryJson createDictionaryCallbackBlock:(NSMutableDictionary<NSString*,id>*(^)())createDictionaryCallbackBlock deserializeValueCallbackBlock:(id(^)(NSString*))deserializeValueCallbackBlock;
++ (NSMutableDictionary<NSString*,id>*) deserializeDictionaryWithDictionaryJson:(NSString*)dictionaryJson createDictionaryCallbackBlock:(NSMutableDictionary<NSString*,id>*(^)(void))createDictionaryCallbackBlock deserializeValueCallbackBlock:(id(^)(NSString*))deserializeValueCallbackBlock;
 /*!
  * <div>
  * Deserializes a JSON string into a dictionary.
@@ -9601,7 +9758,7 @@ typedef enum {
  * The deserialized dictionary.
  * 
  */
-+ (NSMutableDictionary<NSString*,id>* (^)(NSString*, NSMutableDictionary<NSString*,id>*(^)(), id(^)(NSString*))) deserializeDictionaryWithDictionaryJsonAndCreateDictionaryCallbackBlockAndDeserializeValueCallbackBlock;
++ (NSMutableDictionary<NSString*,id>* (^)(NSString*, NSMutableDictionary<NSString*,id>*(^)(void), id(^)(NSString*))) deserializeDictionaryWithDictionaryJsonAndCreateDictionaryCallbackBlockAndDeserializeValueCallbackBlock;
 /*!
  * <div>
  * Deserializes a double array from JSON.
@@ -9728,7 +9885,7 @@ typedef enum {
  * @param callbackBlock The method used for deserializing a property.
  * @return The deserialized object.
  */
-+ (FMIceLinkSerializable*) deserializeObjectFastWithJson:(NSString*)json creatorBlock:(FMIceLinkSerializable*(^)())creatorBlock callbackBlock:(void(^)(FMIceLinkSerializable*, NSString*, NSString*))callbackBlock;
++ (FMIceLinkSerializable*) deserializeObjectFastWithJson:(NSString*)json creatorBlock:(FMIceLinkSerializable*(^)(void))creatorBlock callbackBlock:(void(^)(FMIceLinkSerializable*, NSString*, NSString*))callbackBlock;
 /*!
  * <div>
  * Deserializes a JSON string into a FMIceLinkSerializable target object type.
@@ -9738,7 +9895,7 @@ typedef enum {
  * @inlineparam callbackBlock The method used for deserializing a property.
  * @return The deserialized object.
  */
-+ (FMIceLinkSerializable* (^)(NSString*, FMIceLinkSerializable*(^)(), void(^)(FMIceLinkSerializable*, NSString*, NSString*))) deserializeObjectFastWithJsonAndCreatorBlockAndCallbackBlock;
++ (FMIceLinkSerializable* (^)(NSString*, FMIceLinkSerializable*(^)(void), void(^)(FMIceLinkSerializable*, NSString*, NSString*))) deserializeObjectFastWithJsonAndCreatorBlockAndCallbackBlock;
 /*!
  * <div>
  * Deserializes a JSON string into a target object type.
@@ -9758,7 +9915,7 @@ typedef enum {
  * @param callbackBlock The method used for deserializing a property.
  * @return The deserialized object.
  */
-+ (id) deserializeObjectWithJson:(NSString*)json creatorBlock:(id(^)())creatorBlock callbackBlock:(void(^)(id, NSString*, NSString*))callbackBlock;
++ (id) deserializeObjectWithJson:(NSString*)json creatorBlock:(id(^)(void))creatorBlock callbackBlock:(void(^)(id, NSString*, NSString*))callbackBlock;
 /*!
  * <div>
  * Deserializes a JSON string into a target object type.
@@ -9768,7 +9925,7 @@ typedef enum {
  * @inlineparam callbackBlock The method used for deserializing a property.
  * @return The deserialized object.
  */
-+ (id (^)(NSString*, id(^)(), void(^)(id, NSString*, NSString*))) deserializeObjectWithJsonAndCreatorBlockAndCallbackBlock;
++ (id (^)(NSString*, id(^)(void), void(^)(id, NSString*, NSString*))) deserializeObjectWithJsonAndCreatorBlockAndCallbackBlock;
 /*!
  * <div>
  * Deserializes a raw array from JSON.
@@ -13475,7 +13632,7 @@ typedef enum {
  * <div>
  * Blocks until signalled or until timeout.
  * </div>
- * @param millisecondsTimeout Length of time to block for.
+ * @param millisecondsTimeout Length of time to block for (in ms).
  */
 - (void) waitOneWithMillisecondsTimeout:(int)millisecondsTimeout;
 
@@ -14743,7 +14900,7 @@ typedef enum {
 /*!
  * <div>
  * Sets the number of milliseconds to wait before timing out the HTTP transfer.
- * Defaults to 15000 (15 seconds).
+ * Defaults to 15000 ms (15 seconds).
  * </div>
  */
 - (void) setTimeout:(int)value;
@@ -14762,7 +14919,7 @@ typedef enum {
 /*!
  * <div>
  * Gets the number of milliseconds to wait before timing out the HTTP transfer.
- * Defaults to 15000 (15 seconds).
+ * Defaults to 15000 ms (15 seconds).
  * </div>
  */
 - (int) timeout;
@@ -15281,13 +15438,13 @@ typedef enum {
  * Sets the callback that creates an HTTP-based transfer class.
  * </div>
  */
-+ (void (^)(FMIceLinkHttpTransfer*(^)())) setCreateHttpTransferBlock;
++ (void (^)(FMIceLinkHttpTransfer*(^)(void))) setCreateHttpTransferBlock;
 /*!
  * <div>
  * Sets the callback that creates an HTTP-based transfer class.
  * </div>
  */
-+ (void) setCreateHttpTransferBlock:(FMIceLinkHttpTransfer*(^)())valueBlock;
++ (void) setCreateHttpTransferBlock:(FMIceLinkHttpTransfer*(^)(void))valueBlock;
 
 @end
 
@@ -16250,7 +16407,7 @@ typedef enum {
  * </div>
  * @inlineparam callbackBlock The callback function.
  */
-+ (FMIceLinkFuture<id>* (^)(FMIceLinkFuture<id>*(^)())) wrapPromiseWithCallbackBlock;
++ (FMIceLinkFuture<id>* (^)(FMIceLinkFuture<id>*(^)(void))) wrapPromiseWithCallbackBlock;
 /*!
  * <div>
  * Creates a promise and resolves it using the result from a
@@ -16258,7 +16415,7 @@ typedef enum {
  * </div>
  * @param callbackBlock The callback function.
  */
-+ (FMIceLinkFuture<id>*) wrapPromiseWithCallbackBlock:(FMIceLinkFuture<id>*(^)())callbackBlock;
++ (FMIceLinkFuture<id>*) wrapPromiseWithCallbackBlock:(FMIceLinkFuture<id>*(^)(void))callbackBlock;
 
 @end
 
@@ -16463,7 +16620,7 @@ typedef enum {
  * </div>
  * @inlineparam callbackFunctionBlock The callback function.
  */
-+ (FMIceLinkFuture<id>* (^)(id(^)())) wrapAsyncWithCallbackFunctionBlock;
++ (FMIceLinkFuture<id>* (^)(id(^)(void))) wrapAsyncWithCallbackFunctionBlock;
 /*!
  * <div>
  * Creates a promise and resolves it using the result from a
@@ -16472,7 +16629,7 @@ typedef enum {
  * </div>
  * @param callbackFunctionBlock The callback function.
  */
-+ (FMIceLinkFuture<id>*) wrapAsyncWithCallbackFunctionBlock:(id(^)())callbackFunctionBlock;
++ (FMIceLinkFuture<id>*) wrapAsyncWithCallbackFunctionBlock:(id(^)(void))callbackFunctionBlock;
 /*!
  * <div>
  * Creates a promise and resolves it after invoking a callback
@@ -16496,7 +16653,7 @@ typedef enum {
  * </div>
  * @inlineparam callbackFunctionBlock The callback function.
  */
-+ (FMIceLinkFuture<id>* (^)(id(^)())) wrapWithCallbackFunctionBlock;
++ (FMIceLinkFuture<id>* (^)(id(^)(void))) wrapWithCallbackFunctionBlock;
 /*!
  * <div>
  * Creates a promise and resolves it using the result from a
@@ -16504,7 +16661,7 @@ typedef enum {
  * </div>
  * @param callbackFunctionBlock The callback function.
  */
-+ (FMIceLinkFuture<id>*) wrapWithCallbackFunctionBlock:(id(^)())callbackFunctionBlock;
++ (FMIceLinkFuture<id>*) wrapWithCallbackFunctionBlock:(id(^)(void))callbackFunctionBlock;
 
 @end
 
@@ -16807,7 +16964,7 @@ typedef enum {
  * @param onFailureBlock The callback to invoke on failure.
  * @param onSocketBlock The callback to invoke when a socket is ready.
  */
-- (void) acceptAsyncWithOnSuccessBlock:(void(^)())onSuccessBlock onFailureBlock:(void(^)(NSException*))onFailureBlock onSocketBlock:(void(^)(FMIceLinkStreamSocket*))onSocketBlock;
+- (void) acceptAsyncWithOnSuccessBlock:(void(^)(void))onSuccessBlock onFailureBlock:(void(^)(NSException*))onFailureBlock onSocketBlock:(void(^)(FMIceLinkStreamSocket*))onSocketBlock;
 /*!
  * <div>
  * Accepts a new socket asynchronously.
@@ -16816,7 +16973,7 @@ typedef enum {
  * @inlineparam onFailureBlock The callback to invoke on failure.
  * @inlineparam onSocketBlock The callback to invoke when a socket is ready.
  */
-- (void (^)(void(^)(), void(^)(NSException*), void(^)(FMIceLinkStreamSocket*))) acceptAsyncWithOnSuccessBlockAndOnFailureBlockAndOnSocketBlock;
+- (void (^)(void(^)(void), void(^)(NSException*), void(^)(FMIceLinkStreamSocket*))) acceptAsyncWithOnSuccessBlockAndOnFailureBlockAndOnSocketBlock;
 /*!
  * <div>
  * Connects the socket asynchronously.
@@ -16824,7 +16981,7 @@ typedef enum {
  * @param hostname The remote hostname.
  * @param ipAddress The remote IP address.
  * @param port The remote port.
- * @param timeout The timeout.
+ * @param timeout The timeout (in ms).
  * @param onSuccess The callback to invoke on success.
  * @param onFailure The callback to invoke on failure.
  */
@@ -16836,11 +16993,11 @@ typedef enum {
  * @param hostname The remote hostname.
  * @param ipAddress The remote IP address.
  * @param port The remote port.
- * @param timeout The timeout.
+ * @param timeout The timeout (in ms).
  * @param onSuccessBlock The callback to invoke on success.
  * @param onFailureBlock The callback to invoke on failure.
  */
-- (void) connectAsyncWithHostname:(NSString*)hostname ipAddress:(NSString*)ipAddress port:(int)port timeout:(int)timeout onSuccessBlock:(void(^)())onSuccessBlock onFailureBlock:(void(^)(NSException*, bool))onFailureBlock;
+- (void) connectAsyncWithHostname:(NSString*)hostname ipAddress:(NSString*)ipAddress port:(int)port timeout:(int)timeout onSuccessBlock:(void(^)(void))onSuccessBlock onFailureBlock:(void(^)(NSException*, bool))onFailureBlock;
 /*!
  * <div>
  * Connects the socket asynchronously.
@@ -16848,11 +17005,11 @@ typedef enum {
  * @inlineparam hostname The remote hostname.
  * @inlineparam ipAddress The remote IP address.
  * @inlineparam port The remote port.
- * @inlineparam timeout The timeout.
+ * @inlineparam timeout The timeout (in ms).
  * @inlineparam onSuccessBlock The callback to invoke on success.
  * @inlineparam onFailureBlock The callback to invoke on failure.
  */
-- (void (^)(NSString*, NSString*, int, int, void(^)(), void(^)(NSException*, bool))) connectAsyncWithHostnameAndIPAddressAndPortAndTimeoutAndOnSuccessBlockAndOnFailureBlock;
+- (void (^)(NSString*, NSString*, int, int, void(^)(void), void(^)(NSException*, bool))) connectAsyncWithHostnameAndIPAddressAndPortAndTimeoutAndOnSuccessBlockAndOnFailureBlock;
 - (instancetype) init;
 /*!
  * <div>
@@ -17044,7 +17201,7 @@ typedef enum {
  * <div>
  * Receives data asynchronously.
  * </div>
- * @param timeout The timeout.
+ * @param timeout The timeout (in ms).
  */
 - (void) receiveAsyncWithTimeout:(int)timeout;
 /*!
@@ -17076,7 +17233,7 @@ typedef enum {
  * Sends data asynchronously.
  * </div>
  * @param buffer The buffer.
- * @param timeout The timeout.
+ * @param timeout The timeout (in ms).
  * @param onSuccess The callback to invoke on success.
  * @param onFailure The callback to invoke on failure.
  */
@@ -17086,21 +17243,21 @@ typedef enum {
  * Sends data asynchronously.
  * </div>
  * @param buffer The buffer.
- * @param timeout The timeout.
+ * @param timeout The timeout (in ms).
  * @param onSuccessBlock The callback to invoke on success.
  * @param onFailureBlock The callback to invoke on failure.
  */
-- (void) sendAsyncWithBuffer:(FMIceLinkDataBuffer*)buffer timeout:(int)timeout onSuccessBlock:(void(^)())onSuccessBlock onFailureBlock:(void(^)(NSException*, bool))onFailureBlock;
+- (void) sendAsyncWithBuffer:(FMIceLinkDataBuffer*)buffer timeout:(int)timeout onSuccessBlock:(void(^)(void))onSuccessBlock onFailureBlock:(void(^)(NSException*, bool))onFailureBlock;
 /*!
  * <div>
  * Sends data asynchronously.
  * </div>
  * @inlineparam buffer The buffer.
- * @inlineparam timeout The timeout.
+ * @inlineparam timeout The timeout (in ms).
  * @inlineparam onSuccessBlock The callback to invoke on success.
  * @inlineparam onFailureBlock The callback to invoke on failure.
  */
-- (void (^)(FMIceLinkDataBuffer*, int, void(^)(), void(^)(NSException*, bool))) sendAsyncWithBufferAndTimeoutAndOnSuccessBlockAndOnFailureBlock;
+- (void (^)(FMIceLinkDataBuffer*, int, void(^)(void), void(^)(NSException*, bool))) sendAsyncWithBufferAndTimeoutAndOnSuccessBlockAndOnFailureBlock;
 /*!
  * <div>
  * Sends data synchronously.
@@ -17851,7 +18008,7 @@ typedef enum {
 
 /*!
  * <div>
- * Gets the timeout for the handshake.
+ * Gets the timeout for the handshake (in ms).
  * </div>
  */
 - (int) handshakeTimeout;
@@ -17911,7 +18068,7 @@ typedef enum {
 - (id) sender;
 /*!
  * <div>
- * Sets the timeout for the handshake.
+ * Sets the timeout for the handshake (in ms).
  * </div>
  */
 - (void) setHandshakeTimeout:(int)value;
@@ -18037,13 +18194,13 @@ typedef enum {
 - (void) setSender:(id)value;
 /*!
  * <div>
- * Sets the timeout for the stream.
+ * Sets the timeout for the stream (in ms).
  * </div>
  */
 - (void) setStreamTimeout:(int)value;
 /*!
  * <div>
- * Gets the timeout for the stream.
+ * Gets the timeout for the stream (in ms).
  * </div>
  */
 - (int) streamTimeout;
@@ -18215,7 +18372,7 @@ typedef enum {
 - (void) setTextMessage:(NSString*)value;
 /*!
  * <div>
- * Sets the timeout for the request.
+ * Sets the timeout for the request (in ms).
  * </div>
  */
 - (void) setTimeout:(int)value;
@@ -18227,7 +18384,7 @@ typedef enum {
 - (NSString*) textMessage;
 /*!
  * <div>
- * Gets the timeout for the request.
+ * Gets the timeout for the request (in ms).
  * </div>
  */
 - (int) timeout;
@@ -18304,7 +18461,7 @@ typedef enum {
 
 /*!
  * <div>
- * Gets the timeout for the initial handshake.
+ * Gets the timeout for the initial handshake (in ms).
  * </div>
  */
 - (int) handshakeTimeout;
@@ -18392,7 +18549,7 @@ typedef enum {
 - (FMIceLinkHttpResponseArgs*) sendWithRequestArgs:(FMIceLinkHttpRequestArgs*)requestArgs;
 /*!
  * <div>
- * Sets the timeout for the initial handshake.
+ * Sets the timeout for the initial handshake (in ms).
  * </div>
  */
 - (void) setHandshakeTimeout:(int)value;
@@ -18494,7 +18651,7 @@ typedef enum {
 - (void) setSender:(id)value;
 /*!
  * <div>
- * Sets the timeout for the stream.
+ * Sets the timeout for the stream (in ms).
  * </div>
  */
 - (void) setStreamTimeout:(int)value;
@@ -18512,7 +18669,7 @@ typedef enum {
 - (void) shutdown;
 /*!
  * <div>
- * Gets the timeout for the stream.
+ * Gets the timeout for the stream (in ms).
  * </div>
  */
 - (int) streamTimeout;
@@ -23812,6 +23969,24 @@ typedef enum {
 - (void) addOnProcessFrame:(FMIceLinkAction1<TFrame>*)value;
 /*!
  * <div>
+ * Adds a handler that is raised when an exception is thrown while processing a frame.
+ * </div>
+ */
+- (void) addOnProcessFrameException:(FMIceLinkAction2<TFrame,NSException*>*)value;
+/*!
+ * <div>
+ * Adds a handler that is raised when an exception is thrown while processing a frame.
+ * </div>
+ */
+- (void (^)(void(^)(TFrame, NSException*))) addOnProcessFrameExceptionWithBlock;
+/*!
+ * <div>
+ * Adds a handler that is raised when an exception is thrown while processing a frame.
+ * </div>
+ */
+- (void) addOnProcessFrameExceptionWithBlock:(void(^)(TFrame, NSException*))valueBlock;
+/*!
+ * <div>
  * Adds a handler that is raised when a frame is processed.
  * </div>
  */
@@ -24265,6 +24440,12 @@ typedef enum {
  * </div>
  */
 - (void) removeOnProcessFrame:(FMIceLinkAction1<TFrame>*)value;
+/*!
+ * <div>
+ * Removes a handler that is raised when an exception is thrown while processing a frame.
+ * </div>
+ */
+- (void) removeOnProcessFrameException:(FMIceLinkAction2<TFrame,NSException*>*)value;
 /*!
  * <div>
  * Removes a handler that is raised when control frames are raised.
@@ -27952,6 +28133,24 @@ typedef enum {
 - (void) addOnProcessFrame:(FMIceLinkAction1<TFrame>*)value;
 /*!
  * <div>
+ * Adds a handler that is raised when an exception is thrown while processing a frame.
+ * </div>
+ */
+- (void) addOnProcessFrameException:(FMIceLinkAction2<TFrame,NSException*>*)value;
+/*!
+ * <div>
+ * Adds a handler that is raised when an exception is thrown while processing a frame.
+ * </div>
+ */
+- (void (^)(void(^)(TFrame, NSException*))) addOnProcessFrameExceptionWithBlock;
+/*!
+ * <div>
+ * Adds a handler that is raised when an exception is thrown while processing a frame.
+ * </div>
+ */
+- (void) addOnProcessFrameExceptionWithBlock:(void(^)(TFrame, NSException*))valueBlock;
+/*!
+ * <div>
  * Adds a handler that is raised when a frame is processed.
  * </div>
  */
@@ -28238,6 +28437,12 @@ typedef enum {
  * </div>
  */
 - (void) removeOnProcessFrame:(FMIceLinkAction1<TFrame>*)value;
+/*!
+ * <div>
+ * Removes a handler that is raised when an exception is thrown while processing a frame.
+ * </div>
+ */
+- (void) removeOnProcessFrameException:(FMIceLinkAction2<TFrame,NSException*>*)value;
 /*!
  * <div>
  * Removes a handler that is raised when control frames are raised.
@@ -32925,6 +33130,12 @@ typedef enum {
  * </div>
  */
 - (void) setState:(FMIceLinkConnectionState)value;
+/*!
+ * <div>
+ * Sets the tie breaker.
+ * </div>
+ */
+- (void) setTieBreaker:(NSString*)value;
 /*!
  * <div>
  * Sets the amount of time (in milliseconds)
@@ -56537,16 +56748,6 @@ typedef enum {
 - (bool) startWithUdpAddresses:(NSMutableArray*)udpAddresses tcpAddresses:(NSMutableArray*)tcpAddresses tlsAddresses:(NSMutableArray*)tlsAddresses;
 /*!
  * <div>
- * Starts the server.
- * </div>
- * @param udpAddresses The UDP addresses to listen on.
- * @param tcpAddresses The TCP addresses to listen on.
- * @param tlsAddresses The TLS addresses to listen on.
- * @param tlsCertificate The TLS certificate.
- */
-- (bool) startWithUdpAddresses:(NSMutableArray*)udpAddresses tcpAddresses:(NSMutableArray*)tcpAddresses tlsAddresses:(NSMutableArray*)tlsAddresses tlsCertificate:(FMIceLinkTlsCertificate*)tlsCertificate;
-/*!
- * <div>
  * Stops the server.
  * </div>
  */
@@ -56928,9 +57129,8 @@ typedef enum {
  * @param udpAddresses The UDP addresses to listen on.
  * @param tcpAddresses The TCP addresses to listen on.
  * @param tlsAddresses The TLS addresses to listen on.
- * @param tlsCertificate The TLS certificate.
  */
-- (bool) startWithUdpAddresses:(NSMutableArray*)udpAddresses tcpAddresses:(NSMutableArray*)tcpAddresses tlsAddresses:(NSMutableArray*)tlsAddresses tlsCertificate:(FMIceLinkTlsCertificate*)tlsCertificate;
+- (bool) startWithUdpAddresses:(NSMutableArray*)udpAddresses tcpAddresses:(NSMutableArray*)tcpAddresses tlsAddresses:(NSMutableArray*)tlsAddresses;
 /*!
  * <div>
  * Stops the server.
@@ -56998,6 +57198,13 @@ typedef enum {
  * </div>
  */
 + (long long) generateSynchronizationSource;
+/*!
+ * <div>
+ * Generates a Connection Tie-breaker.
+ * </div>
+ * @return
+ */
++ (NSString*) generateTieBreaker;
 - (instancetype) init;
 /*!
  * <div>
@@ -57381,7 +57588,7 @@ typedef enum {
 - (int) frameHeight;
 /*!
  * <div>
- * Gets the average frame rate.
+ * Gets the average frame rate for the lifespan of the encoder.
  * </div>
  */
 - (int) frameRate;
