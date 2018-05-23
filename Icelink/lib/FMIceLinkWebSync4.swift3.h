@@ -6,8 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "FMIceLink.swift3.h"
-
 @class FMSingleAction;
 @class FMWeakArray;
 @class FMWeakDictionary;
